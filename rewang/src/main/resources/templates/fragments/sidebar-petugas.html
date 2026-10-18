@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<aside th:fragment="sidebar(active)" class="sidebar">
+    <div class="sidebar-header">REWANG <small class="text-secondary">Petugas</small></div>
+
+    <nav class="nav flex-column mt-2">
+        <a class="nav-link" th:classappend="${active == 'dashboard'} ? 'active'" th:href="@{/petugas/dashboard}">Dashboard</a>
+        <a class="nav-link" th:classappend="${active == 'laporan'} ? 'active'" href="#">Laporan Bencana</a>
+        <a class="nav-link" th:classappend="${active == 'kebutuhan'} ? 'active'" href="#">Kebutuhan Bantuan</a>
+        <a class="nav-link" th:classappend="${active == 'dokumentasi'} ? 'active'" href="#">Dokumentasi</a>
+    </nav>
+
+    <div class="sidebar-footer">
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="btn btn-outline-light btn-sm w-100">Logout</button>
+        </form>
+    </div>
+</aside>
+</body>
+</html>
