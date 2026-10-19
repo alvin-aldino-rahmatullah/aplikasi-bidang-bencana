@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Dokumentasi')}"></head>
+<body>
+<div class="layout">
+    <aside th:replace="~{fragments/sidebar-petugas :: sidebar('dokumentasi')}"></aside>
+
+    <div class="content">
+        <header th:replace="~{fragments/base :: topbar}"></header>
+        <main class="p-4">
+            <h3>Dokumentasi</h3>
+            <p class="text-muted">Unggah foto atau PDF ke laporan milik Anda. Hapus hanya pada laporan draft.</p>
+
+            <div th:if="${sukses}" class="alert alert-success" th:text="${sukses}"></div>
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Buat laporan draft</h5>
+                    <p class="small text-muted mb-3">Dokumentasi menempel ke laporan. Form ini hanya untuk punya induk draft (bukan CRUD laporan lengkap).</p>
+                    <form th:action="@{/petugas/dokumentasi/laporan-draft}" method="post" class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Jenis bencana</label>
+                            <select name="bencanaId" class="form-select" required>
+                                <option value="" disabled selected>Pilih</option>
+                                <option th:each="b : ${bencanaList}" th:value="${b.id}" th:text="${b.nama}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label">Judul</label>
+                            <input type="text" name="judul" class="form-control" required maxlength="200">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Lokasi</label>
+                            <input type="text" name="lokasi" class="form-control" required maxlength="255">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Waktu kejadian</label>
+                            <input type="datetime-local" name="waktuKejadian" class="form-control" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Deskripsi (opsional)</label>
+                            <textarea name="deskripsi" class="form-control" rows="2"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">Buat draft &amp; unggah file</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <h5>Laporan Anda</h5>
+            <div th:if="${#lists.isEmpty(laporanList)}" class="alert alert-info">
+                Belum ada laporan. Buat draft di atas, lalu unggah dokumentasi.
+            </div>
+            <div class="table-responsive" th:if="${!#lists.isEmpty(laporanList)}">
+                <table class="table table-striped align-middle">
+                    <thead>
+                    <tr>
+                        <th>Judul</th>
+                        <th>Status</th>
+                        <th>Jumlah file</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="lap : ${laporanList}">
+                        <td th:text="${lap.judul}">Judul</td>
+                        <td><span class="badge text-bg-secondary" th:text="${lap.status}">DRAFT</span></td>
+                        <td th:text="${jumlahFile[lap.id]}">0</td>
+                        <td>
+                            <a class="btn btn-sm btn-outline-primary" th:href="@{/petugas/dokumentasi/{id}(id=${lap.id})}">Kelola file</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/base :: scripts}"></th:block>
+</body>
+</html>

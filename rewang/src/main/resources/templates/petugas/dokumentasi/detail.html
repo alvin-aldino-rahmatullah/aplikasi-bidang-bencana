@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Dokumentasi laporan')}"></head>
+<body>
+<div class="layout">
+    <aside th:replace="~{fragments/sidebar-petugas :: sidebar('dokumentasi')}"></aside>
+
+    <div class="content">
+        <header th:replace="~{fragments/base :: topbar}"></header>
+        <main class="p-4">
+            <p><a th:href="@{/petugas/dokumentasi}">&larr; Semua dokumentasi</a></p>
+            <h3 th:text="${laporan.judul}">Judul</h3>
+            <p>
+                Status: <span class="badge text-bg-secondary" th:text="${laporan.status}">DRAFT</span>
+                &middot; <span th:text="${laporan.lokasi}">Lokasi</span>
+            </p>
+
+            <div th:if="${sukses}" class="alert alert-success" th:text="${sukses}"></div>
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+            <div class="card mb-4" th:if="${laporan.draft}">
+                <div class="card-body">
+                    <h5 class="card-title">Unggah file</h5>
+                    <p class="small text-muted">jpg, png, atau pdf. Maksimal 5 MB.</p>
+                    <form th:action="@{/petugas/dokumentasi/{id}(id=${laporan.id})}" method="post" enctype="multipart/form-data">
+                        <div class="input-group">
+                            <input type="file" name="file" class="form-control" accept=".jpg,.jpeg,.png,.pdf" required>
+                            <button type="submit" class="btn btn-primary">Unggah</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="alert alert-warning" th:unless="${laporan.draft}">
+                Laporan sudah terkirim. File masih bisa dilihat, tetapi tidak bisa diunggah atau dihapus.
+            </div>
+
+            <h5>Daftar file</h5>
+            <div th:if="${#lists.isEmpty(berkas)}" class="alert alert-light border">
+                Belum ada dokumentasi pada laporan ini.
+            </div>
+            <div class="table-responsive" th:if="${!#lists.isEmpty(berkas)}">
+                <table class="table align-middle">
+                    <thead>
+                    <tr>
+                        <th>Nama file</th>
+                        <th>Waktu unggah</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="d : ${berkas}">
+                        <td>
+                            <a th:href="@{/petugas/dokumentasi/{lid}/{did}/unduh(lid=${laporan.id}, did=${d.id})}"
+                               th:text="${d.namaFile}" target="_blank" rel="noopener">file</a>
+                        </td>
+                        <td th:text="${#temporals.format(d.uploadedAt, 'dd-MM-yyyy HH:mm')}">waktu</td>
+                        <td>
+                            <form th:if="${laporan.draft}"
+                                  th:action="@{/petugas/dokumentasi/{lid}/{did}/hapus(lid=${laporan.id}, did=${d.id})}"
+                                  method="post" class="d-inline"
+                                  onsubmit="return confirm('Hapus file ini?');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Hapus</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/base :: scripts}"></th:block>
+</body>
+</html>

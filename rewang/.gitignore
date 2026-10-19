@@ -44,3 +44,7 @@ application-local.yml
 # Logs
 *.log
 logs/
+
+# Uploaded dokumentasi (keep folder)
+uploads/*
+!uploads/.gitkeep
