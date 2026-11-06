@@ -4,6 +4,7 @@ import com.example.rewang.entity.Bencana;
 import com.example.rewang.entity.Laporan;
 import com.example.rewang.entity.User;
 import com.example.rewang.repository.BencanaRepository;
+import com.example.rewang.repository.FeedbackRepository;
 import com.example.rewang.repository.LaporanRepository;
 import com.example.rewang.service.CurrentUserService;
 import com.example.rewang.service.DokumentasiStorageService;
@@ -36,16 +37,19 @@ public class DokumentasiController {
     private final LaporanRepository laporanRepository;
     private final BencanaRepository bencanaRepository;
     private final DokumentasiStorageService dokumentasiStorageService;
+    private final FeedbackRepository feedbackRepository;
 
     public DokumentasiController(
             CurrentUserService currentUserService,
             LaporanRepository laporanRepository,
             BencanaRepository bencanaRepository,
-            DokumentasiStorageService dokumentasiStorageService) {
+            DokumentasiStorageService dokumentasiStorageService,
+            FeedbackRepository feedbackRepository) {
         this.currentUserService = currentUserService;
         this.laporanRepository = laporanRepository;
         this.bencanaRepository = bencanaRepository;
         this.dokumentasiStorageService = dokumentasiStorageService;
+        this.feedbackRepository = feedbackRepository;
     }
 
     @GetMapping
@@ -116,6 +120,7 @@ public class DokumentasiController {
         }
         model.addAttribute("laporan", laporan);
         model.addAttribute("berkas", dokumentasiStorageService.daftar(laporanId));
+        model.addAttribute("feedbackList", feedbackRepository.findByLaporanIdOrderByCreatedAtDesc(laporanId));
         return "petugas/dokumentasi/detail";
     }
 

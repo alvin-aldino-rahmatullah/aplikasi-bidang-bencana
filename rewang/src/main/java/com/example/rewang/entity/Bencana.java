@@ -20,5 +20,4 @@ public class Bencana {
 
     private String nama;
 
-    private String keterangan;
 }

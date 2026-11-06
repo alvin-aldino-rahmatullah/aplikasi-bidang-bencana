@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Feedback Admin')}"></head>
+<body>
+<div class="layout">
+    <aside th:replace="~{fragments/sidebar-petugas :: sidebar('feedback')}"></aside>
+
+    <div class="content">
+        <header th:replace="~{fragments/base :: topbar}"></header>
+        <main class="p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h3>Feedback Admin</h3>
+                    <p class="text-muted mb-0">Catatan dan evaluasi dari Admin terhadap laporan bencana Anda.</p>
+                </div>
+                <div th:if="${selectedLaporan != null}">
+                    <a th:href="@{/petugas/feedback}" class="btn btn-outline-secondary btn-sm">&larr; Lihat Semua Feedback</a>
+                </div>
+            </div>
+
+            <div th:if="${selectedLaporan != null}" class="alert alert-info py-2">
+                Menampilkan feedback untuk laporan: <strong th:text="${selectedLaporan.judul}">Judul</strong>
+                (Status: <span class="badge text-bg-secondary" th:text="${selectedLaporan.status}">STATUS</span>)
+            </div>
+
+            <div th:if="${#lists.isEmpty(feedbackList)}" class="alert alert-light border">
+                Belum ada feedback dari admin.
+            </div>
+
+            <div class="table-responsive" th:if="${!#lists.isEmpty(feedbackList)}">
+                <table class="table table-striped align-middle">
+                    <thead>
+                    <tr>
+                        <th style="width: 25%;">Laporan</th>
+                        <th style="width: 40%;">Catatan / Feedback</th>
+                        <th style="width: 15%;">Admin</th>
+                        <th style="width: 12%;">Waktu</th>
+                        <th style="width: 8%;"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="fb : ${feedbackList}">
+                        <td>
+                            <strong th:text="${fb.laporan != null ? fb.laporan.judul : '-'}">Judul Laporan</strong>
+                            <div class="small text-muted" th:if="${fb.laporan != null}">
+                                <span class="badge text-bg-secondary" th:text="${fb.laporan.status}">STATUS</span>
+                                <span th:text="${fb.laporan.lokasi}">Lokasi</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="white-space: pre-wrap;" th:text="${fb.isi}">Isi feedback</div>
+                        </td>
+                        <td>
+                            <span th:text="${fb.admin != null ? fb.admin.nama : 'Admin'}">Admin</span>
+                        </td>
+                        <td class="small text-muted" th:text="${#temporals.format(fb.createdAt, 'dd-MM-yyyy HH:mm')}">
+                            Waktu
+                        </td>
+                        <td>
+                            <a th:if="${fb.laporan != null}"
+                               th:href="@{/petugas/dokumentasi/{id}(id=${fb.laporan.id})}"
+                               class="btn btn-sm btn-outline-primary"
+                               title="Lihat Laporan">
+                                Detail
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/base :: scripts}"></th:block>
+</body>
+</html>
+
