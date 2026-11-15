@@ -1,0 +1,128 @@
+
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelola Stok Barang</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        .tambah {
+            display: inline-block;
+            background: #198754;
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #198754;
+            color: white;
+        }
+
+        .edit {
+            color: #0d6efd;
+        }
+
+        .hapus {
+            color: #dc3545;
+        }
+
+        .pesan {
+            color: green;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <h2>Kelola Stok Barang</h2>
+    <p>Daftar persediaan barang bantuan bencana.</p>
+
+    <p class="pesan" th:if="${success}"
+       th:text="${success}"></p>
+
+    <a th:href="@{/admin/barang/tambah}" class="tambah">
+        + Tambah Barang
+    </a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nama Barang</th>
+                <th>Satuan</th>
+                <th>Stok</th>
+                <th>Stok Minimum</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr th:each="barang : ${daftarBarang}">
+                <td th:text="${barang.id}"></td>
+                <td th:text="${barang.namaBarang}"></td>
+                <td th:text="${barang.satuan}"></td>
+                <td th:text="${barang.stok}"></td>
+                <td th:text="${barang.stokMinimum}"></td>
+                <td>
+                    <a class="edit"
+                       th:href="@{/admin/barang/edit/{id}(id=${barang.id})}">
+                        Edit
+                    </a>
+
+                    |
+
+                    <form th:action="@{/admin/barang/hapus/{id}(id=${barang.id})}"
+                          method="post" style="display:inline;">
+                        <button type="submit"
+                                onclick="return confirm('Yakin ingin menghapus barang ini?')">
+                            Hapus
+                        </button>
+                    </form>
+                </td>
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(daftarBarang)}">
+                <td colspan="6">Belum ada data barang.</td>
+            </tr>
+        </tbody>
+    </table>
+
+</div>
+
+</body>
+</html>

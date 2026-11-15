@@ -1,0 +1,94 @@
+
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Barang</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 18px;
+            background: #198754;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        a {
+            margin-left: 10px;
+            color: #555;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2 th:text="${barang.id == null ? 'Tambah Barang' : 'Edit Barang'}">
+        Form Barang
+    </h2>
+
+    <form th:action="${barang.id == null}
+          ? @{/admin/barang/simpan}
+          : @{/admin/barang/update/{id}(id=${barang.id})}"
+          th:object="${barang}" method="post">
+
+        <label>Nama Barang</label>
+        <input type="text" th:field="*{namaBarang}" required>
+
+        <label>Satuan</label>
+        <input type="text" th:field="*{satuan}" required>
+
+        <label>Jumlah Stok</label>
+        <input type="number" th:field="*{stok}" min="0" required>
+
+        <label>Stok Minimum</label>
+        <input type="number" th:field="*{stokMinimum}" min="0" required>
+
+        <button type="submit">Simpan</button>
+
+        <a th:href="@{/admin/barang}">Kembali</a>
+
+    </form>
+
+</div>
+
+</body>
+</html>
