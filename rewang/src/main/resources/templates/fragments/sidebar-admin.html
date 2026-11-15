@@ -1,21 +1,67 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<body>
-<aside th:fragment="sidebar(active)" class="sidebar">
-    <div class="sidebar-header">REWANG <small class="text-secondary">Admin</small></div>
 
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<aside th:fragment="sidebar(active)" class="sidebar">
+
+    <!-- Header Sidebar -->
+    <div class="sidebar-header">
+        REWANG
+        <small class="text-secondary">Admin</small>
+    </div>
+
+    <!-- Menu Navigasi -->
     <nav class="nav flex-column mt-2">
-        <a class="nav-link" th:classappend="${active == 'dashboard'} ? 'active'" th:href="@{/admin/dashboard}">Dashboard</a>
-        <a class="nav-link" th:classappend="${active == 'user'} ? 'active'" href="#">Kelola User</a>
-        <a class="nav-link" th:classappend="${active == 'laporan'} ? 'active'" href="#">Laporan Bencana</a>
-        <a class="nav-link" th:classappend="${active == 'logistik'} ? 'active'" href="#">Logistik</a>
+
+        <!-- Dashboard -->
+        <a class="nav-link"
+           th:classappend="${active == 'dashboard'} ? 'active'"
+           th:href="@{/admin/dashboard}">
+            Dashboard
+        </a>
+
+        <!-- Kelola User -->
+        <a class="nav-link"
+           th:classappend="${active == 'user'} ? 'active'"
+           th:href="@{/admin/user}">
+            Kelola User
+        </a>
+
+        <!-- Laporan Bencana -->
+        <a class="nav-link"
+           th:classappend="${active == 'laporan'} ? 'active'"
+           th:href="@{/admin/laporan}">
+            Laporan Bencana
+        </a>
+
+        <!-- Logistik -->
+        <a class="nav-link"
+           th:classappend="${active == 'logistik'} ? 'active'"
+           th:href="@{/admin/logistik}">
+            Logistik
+        </a>
+
+        <!-- Statistik -->
+        <a class="nav-link"
+           th:classappend="${active == 'statistik'} ? 'active'"
+           th:href="@{/admin/statistik}">
+            Statistik
+        </a>
+
     </nav>
 
+    <!-- Footer Sidebar -->
     <div class="sidebar-footer">
         <form th:action="@{/logout}" method="post">
-            <button type="submit" class="btn btn-outline-light btn-sm w-100">Logout</button>
+            <button type="submit"
+                    class="btn btn-outline-light btn-sm w-100">
+                Logout
+            </button>
         </form>
     </div>
+
 </aside>
+
 </body>
 </html>
