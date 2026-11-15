@@ -1,3 +1,4 @@
+
 package com.example.rewang.entity;
 
 import jakarta.persistence.Column;
@@ -18,32 +19,36 @@ import lombok.Setter;
 @Table(name = "laporan")
 public class Laporan {
 
-    public static final String STATUS_DRAFT = "DRAFT";
-    public static final String STATUS_TERKIRIM = "TERKIRIM";
-    public static final String STATUS_DIVERIFIKASI = "DIVERIFIKASI";
+    public static final String STATUS_DRAFT = "draft";
+    public static final String STATUS_TERKIRIM = "diajukan";
+    public static final String STATUS_DIVERIFIKASI = "diverifikasi";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "bencana_id")
+    @JoinColumn(name = "bencana_id", nullable = false)
     private Bencana bencana;
 
+    @Column(name = "verified_by")
+    private Integer verifiedBy;
+
+    @Column(name = "judul", nullable = false, length = 200)
     private String judul;
 
-    private String lokasi;
+    @Column(name = "isi", nullable = false, columnDefinition = "TEXT")
+    private String isi;
 
-    private String deskripsi;
+    @Column(name = "status", nullable = false)
+    private String status = STATUS_DRAFT;
 
-    @Column(name = "waktu_kejadian")
-    private LocalDateTime waktuKejadian;
-
-    private String status;
+    @Column(name = "verified_at")
+    private LocalDateTime verifiedAt;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

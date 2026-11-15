@@ -1,3 +1,4 @@
+
 package com.example.rewang.config;
 
 import org.springframework.context.annotation.Bean;
@@ -19,7 +20,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login").permitAll()
+                .requestMatchers("/", "/login", "/css/**", "/js/**", "/images/**").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/petugas/**").hasRole("PETUGAS")
                 .anyRequest().authenticated()
@@ -30,7 +31,10 @@ public class SecurityConfig {
                 .successHandler((request, response, authentication) -> {
                     boolean isAdmin = authentication.getAuthorities().stream()
                             .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-                    response.sendRedirect(isAdmin ? "/admin/dashboard" : "/petugas/dashboard");
+
+                    response.sendRedirect(
+                        isAdmin ? "/admin/dashboard" : "/petugas/dashboard"
+                    );
                 })
                 .permitAll()
             )

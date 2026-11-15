@@ -1,3 +1,4 @@
+
 package com.example.rewang.entity;
 
 import jakarta.persistence.Column;
@@ -22,15 +23,19 @@ public class KebutuhanBantuan {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "laporan_id")
+    @JoinColumn(name = "laporan_id", nullable = false)
     private Laporan laporan;
 
-    @Column(name = "nama_item")
-    private String namaItem;
+    @ManyToOne
+    @JoinColumn(name = "barang_id", nullable = false)
+    private Barang barang;
 
-    private Integer jumlah;
+    @Column(name = "jumlah_diminta", nullable = false)
+    private Integer jumlahDiminta;
 
-    private String satuan;
+    @Column(name = "jumlah_disetujui", nullable = false)
+    private Integer jumlahDisetujui = 0;
 
-    private String catatan;
+    @Column(name = "status", nullable = false)
+    private String status = "menunggu";
 }
