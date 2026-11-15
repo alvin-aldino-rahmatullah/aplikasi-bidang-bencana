@@ -103,6 +103,23 @@ public class DokumentasiStorageService {
         }
     }
 
+    @Transactional
+    public void hapusSemuaDokumentasiLaporan(User user, Integer laporanId) throws IOException {
+        Laporan laporan = laporanMilik(user, laporanId)
+                .orElseThrow(() -> new IllegalArgumentException("Laporan tidak ditemukan."));
+        if (!laporan.isDraft()) {
+            throw new IllegalStateException("Hanya bisa menghapus dokumentasi pada laporan draft.");
+        }
+        List<Dokumentasi> list = dokumentasiRepository.findByLaporanIdOrderByUploadedAtDesc(laporanId);
+        for (Dokumentasi dok : list) {
+            Path target = uploadRoot.resolve(dok.getPathFile()).normalize();
+            dokumentasiRepository.delete(dok);
+            if (target.startsWith(uploadRoot)) {
+                Files.deleteIfExists(target);
+            }
+        }
+    }
+
     public Resource unduh(User user, Integer laporanId, Integer dokumentasiId) {
         laporanMilik(user, laporanId)
                 .orElseThrow(() -> new IllegalArgumentException("Laporan tidak ditemukan."));

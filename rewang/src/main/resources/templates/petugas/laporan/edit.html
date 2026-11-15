@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Edit Laporan Bencana')}"></head>
+<body>
+<div class="layout">
+    <aside th:replace="~{fragments/sidebar-petugas :: sidebar('laporan')}"></aside>
+
+    <div class="content">
+        <header th:replace="~{fragments/base :: topbar}"></header>
+        <main class="p-4">
+            <div class="mb-4">
+                <a th:href="@{/petugas/laporan/{id}(id=${laporan.id})}" class="btn btn-outline-secondary btn-sm mb-2">&larr; Kembali ke Detail Laporan</a>
+                <h3>Edit Laporan Bencana</h3>
+                <p class="text-muted">Perbarui data laporan berstatus draft sebelum diajukan ke Admin.</p>
+            </div>
+
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <form th:action="@{/petugas/laporan/{id}/edit(id=${laporan.id})}" method="post" class="row g-3">
+                        <div class="col-md-12">
+                            <label for="bencanaId" class="form-label fw-semibold">Kejadian Bencana <span class="text-danger">*</span></label>
+                            <select id="bencanaId" name="bencanaId" class="form-select" required>
+                                <option value="" disabled>-- Pilih Kejadian Bencana --</option>
+                                <option th:each="b : ${bencanaList}"
+                                        th:value="${b.id}"
+                                        th:text="${b.nama + ' (' + b.jenis + ' - ' + b.lokasi + ')'}"
+                                        th:selected="${laporan.bencana != null && laporan.bencana.id == b.id}">
+                                    Bencana (Jenis - Lokasi)
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label for="judul" class="form-label fw-semibold">Judul Laporan <span class="text-danger">*</span></label>
+                            <input type="text" id="judul" name="judul" class="form-control"
+                                   th:value="${laporan.judul}"
+                                   required maxlength="200">
+                        </div>
+
+                        <div class="col-md-12">
+                            <label for="isi" class="form-label fw-semibold">Isi Laporan / Keterangan Kejadian <span class="text-danger">*</span></label>
+                            <textarea id="isi" name="isi" class="form-control" rows="8"
+                                      th:text="${laporan.isi}"
+                                      required></textarea>
+                        </div>
+
+                        <div class="col-12 d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                            <a th:href="@{/petugas/laporan/{id}(id=${laporan.id})}" class="btn btn-outline-secondary">Batal</a>
+                            <div class="d-flex gap-2">
+                                <button type="submit" name="aksi" value="draft" class="btn btn-secondary">
+                                    Simpan Perubahan (Draft)
+                                </button>
+                                <button type="submit" name="aksi" value="ajukan" class="btn btn-primary">
+                                    Simpan &amp; Ajukan ke Admin
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/base :: scripts}"></th:block>
+</body>
+</html>

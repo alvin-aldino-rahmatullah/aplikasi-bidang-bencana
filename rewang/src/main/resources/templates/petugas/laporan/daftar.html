@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Laporan Bencana')}"></head>
+<body>
+<div class="layout">
+    <aside th:replace="~{fragments/sidebar-petugas :: sidebar('laporan')}"></aside>
+
+    <div class="content">
+        <header th:replace="~{fragments/base :: topbar}"></header>
+        <main class="p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h3>Laporan Bencana</h3>
+                    <p class="text-muted mb-0">Kelola dan pantau laporan kejadian bencana yang Anda laporkan.</p>
+                </div>
+                <div>
+                    <a th:href="@{/petugas/laporan/buat}" class="btn btn-primary">
+                        + Buat Laporan Baru
+                    </a>
+                </div>
+            </div>
+
+            <div th:if="${sukses}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <span th:text="${sukses}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <!-- Filter Status -->
+            <ul class="nav nav-pills mb-3">
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${selectedStatus == null || selectedStatus == ''} ? 'active'"
+                       th:href="@{/petugas/laporan}">Semua</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${selectedStatus == 'draft'} ? 'active'"
+                       th:href="@{/petugas/laporan(status='draft')}">Draft</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${selectedStatus == 'diajukan'} ? 'active'"
+                       th:href="@{/petugas/laporan(status='diajukan')}">Diajukan</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${selectedStatus == 'diverifikasi'} ? 'active'"
+                       th:href="@{/petugas/laporan(status='diverifikasi')}">Diverifikasi</a>
+                </li>
+            </ul>
+
+            <!-- Tabel Daftar Laporan -->
+            <div th:if="${#lists.isEmpty(laporanList)}" class="alert alert-light border text-center py-4">
+                <p class="text-muted mb-2">Belum ada laporan bencana.</p>
+                <a th:href="@{/petugas/laporan/buat}" class="btn btn-outline-primary btn-sm">Buat Laporan Sekarang</a>
+            </div>
+
+            <div class="table-responsive bg-white rounded border shadow-sm" th:if="${!#lists.isEmpty(laporanList)}">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                    <tr>
+                        <th style="width: 5%;">#</th>
+                        <th style="width: 30%;">Judul Laporan</th>
+                        <th style="width: 20%;">Bencana</th>
+                        <th style="width: 12%;">Status</th>
+                        <th style="width: 10%;">Berkas</th>
+                        <th style="width: 13%;">Diperbarui</th>
+                        <th style="width: 10%;" class="text-end">Aksi</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="lap, stat : ${laporanList}">
+                        <td th:text="${stat.count}">1</td>
+                        <td>
+                            <a th:href="@{/petugas/laporan/{id}(id=${lap.id})}" class="fw-semibold text-decoration-none text-dark d-block"
+                               th:text="${lap.judul}">Judul Laporan</a>
+                            <small class="text-muted" th:if="${lap.isi != null}"
+                                   th:text="${#strings.abbreviate(lap.isi, 60)}">Deskripsi singkat...</small>
+                        </td>
+                        <td>
+                            <span class="badge text-bg-light border" th:text="${lap.bencana != null ? lap.bencana.jenis : '-'}">Jenis</span>
+                            <div class="small fw-medium" th:text="${lap.bencana != null ? lap.bencana.nama : '-'}">Nama Bencana</div>
+                        </td>
+                        <td>
+                            <span th:if="${lap.status == 'draft'}" class="badge text-bg-secondary">Draft</span>
+                            <span th:if="${lap.status == 'diajukan'}" class="badge text-bg-primary">Diajukan</span>
+                            <span th:if="${lap.status == 'diverifikasi'}" class="badge text-bg-success">Diverifikasi</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border" th:text="${jumlahDokumentasi[lap.id] + ' file'}">0 file</span>
+                        </td>
+                        <td class="small text-muted" th:text="${#temporals.format(lap.updatedAt, 'dd-MM-yyyy HH:mm')}">
+                            01-01-2026 10:00
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm">
+                                <a th:href="@{/petugas/laporan/{id}(id=${lap.id})}" class="btn btn-outline-primary" title="Lihat Detail">
+                                    Detail
+                                </a>
+                                <a th:if="${lap.isDraft()}" th:href="@{/petugas/laporan/{id}/edit(id=${lap.id})}" class="btn btn-outline-secondary" title="Edit Draft">
+                                    Edit
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/base :: scripts}"></th:block>
+</body>
+</html>

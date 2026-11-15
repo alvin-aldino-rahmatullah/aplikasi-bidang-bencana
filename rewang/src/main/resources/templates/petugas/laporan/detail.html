@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Detail Laporan Bencana')}"></head>
+<body>
+<div class="layout">
+    <aside th:replace="~{fragments/sidebar-petugas :: sidebar('laporan')}"></aside>
+
+    <div class="content">
+        <header th:replace="~{fragments/base :: topbar}"></header>
+        <main class="p-4">
+            <div class="d-flex justify-content-between align-items-start mb-3 flex-wrap gap-2">
+                <div>
+                    <a th:href="@{/petugas/laporan}" class="btn btn-outline-secondary btn-sm mb-2">&larr; Kembali ke Daftar Laporan</a>
+                    <h3 class="mb-1" th:text="${laporan.judul}">Judul Laporan</h3>
+                    <div>
+                        <span th:if="${laporan.status == 'draft'}" class="badge text-bg-secondary fs-6">Draft</span>
+                        <span th:if="${laporan.status == 'diajukan'}" class="badge text-bg-primary fs-6">Diajukan ke Admin</span>
+                        <span th:if="${laporan.status == 'diverifikasi'}" class="badge text-bg-success fs-6">Diverifikasi oleh Admin</span>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <!-- Tombol Aksi Jika Draft -->
+                    <div th:if="${laporan.isDraft()}" class="d-flex gap-2 flex-wrap">
+                        <a th:href="@{/petugas/laporan/{id}/edit(id=${laporan.id})}" class="btn btn-outline-secondary">
+                            Edit Laporan
+                        </a>
+                        <form th:action="@{/petugas/laporan/{id}/ajukan(id=${laporan.id})}" method="post"
+                              onsubmit="return confirm('Apakah Anda yakin ingin mengajukan laporan ini ke Admin? Setelah diajukan, laporan tidak dapat diedit lagi.')">
+                            <button type="submit" class="btn btn-success">
+                                Ajukan ke Admin
+                            </button>
+                        </form>
+                        <form th:action="@{/petugas/laporan/{id}/hapus(id=${laporan.id})}" method="post"
+                              onsubmit="return confirm('Apakah Anda yakin ingin menghapus laporan draft ini beserta seluruh dokumentasinya?')">
+                            <button type="submit" class="btn btn-outline-danger">
+                                Hapus
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Tombol Kelola Dokumentasi -->
+                    <a th:href="@{/petugas/dokumentasi/{id}(id=${laporan.id})}" class="btn btn-outline-primary">
+                        Kelola Dokumentasi
+                    </a>
+                </div>
+            </div>
+
+            <div th:if="${sukses}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <span th:text="${sukses}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <!-- Card Informasi Bencana & Laporan -->
+            <div class="row g-4 mb-4">
+                <div class="col-lg-8">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-header bg-white py-3 border-bottom">
+                            <h5 class="card-title mb-0">Isi Laporan Kejadian</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="p-3 bg-light rounded border mb-3" style="white-space: pre-wrap; font-size: 1rem; line-height: 1.6;"
+                                 th:text="${laporan.isi}">
+                                Isi laporan lengkap...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card shadow-sm border-0 mb-3">
+                        <div class="card-header bg-white py-3 border-bottom">
+                            <h5 class="card-title mb-0">Informasi Bencana</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <small class="text-muted d-block">Nama Bencana</small>
+                                <strong th:text="${laporan.bencana != null ? laporan.bencana.nama : '-'}">Nama Bencana</strong>
+                            </div>
+                            <div class="mb-3">
+                                <small class="text-muted d-block">Jenis Bencana</small>
+                                <span class="badge text-bg-light border" th:text="${laporan.bencana != null ? laporan.bencana.jenis : '-'}">Jenis</span>
+                            </div>
+                            <div class="mb-3">
+                                <small class="text-muted d-block">Lokasi Kejadian</small>
+                                <span th:text="${laporan.bencana != null ? laporan.bencana.lokasi : '-'}">Lokasi</span>
+                            </div>
+                            <div class="mb-3" th:if="${laporan.bencana != null && laporan.bencana.tanggalKejadian != null}">
+                                <small class="text-muted d-block">Tanggal Kejadian</small>
+                                <span th:text="${#temporals.format(laporan.bencana.tanggalKejadian, 'dd-MM-yyyy')}">01-01-2026</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card shadow-sm border-0">
+                        <div class="card-header bg-white py-3 border-bottom">
+                            <h5 class="card-title mb-0">Metadata Laporan</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-2">
+                                <small class="text-muted d-block">Pelapor (Petugas)</small>
+                                <strong th:text="${laporan.user != null ? laporan.user.nama : '-'}">Nama Petugas</strong>
+                                <div class="small text-muted" th:text="${laporan.user != null ? laporan.user.email : ''}">email@test.com</div>
+                            </div>
+                            <div class="mb-2">
+                                <small class="text-muted d-block">Dibuat Pada</small>
+                                <span class="small" th:text="${#temporals.format(laporan.createdAt, 'dd-MM-yyyy HH:mm')}">01-01-2026 10:00</span>
+                            </div>
+                            <div class="mb-2">
+                                <small class="text-muted d-block">Terakhir Diperbarui</small>
+                                <span class="small" th:text="${#temporals.format(laporan.updatedAt, 'dd-MM-yyyy HH:mm')}">01-01-2026 10:00</span>
+                            </div>
+                            <div class="mb-2" th:if="${laporan.verifiedAt != null}">
+                                <small class="text-muted d-block">Diverifikasi Pada</small>
+                                <span class="small text-success fw-medium" th:text="${#temporals.format(laporan.verifiedAt, 'dd-MM-yyyy HH:mm')}">01-01-2026 12:00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card Dokumentasi -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Dokumentasi Terkait</h5>
+                    <a th:href="@{/petugas/dokumentasi/{id}(id=${laporan.id})}" class="btn btn-outline-primary btn-sm">
+                        + Unggah / Kelola File
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div th:if="${#lists.isEmpty(berkasList)}" class="text-muted text-center py-3">
+                        Belum ada file dokumentasi (foto / PDF) yang diunggah untuk laporan ini.
+                    </div>
+                    <div class="table-responsive" th:if="${!#lists.isEmpty(berkasList)}">
+                        <table class="table table-sm table-striped align-middle mb-0">
+                            <thead>
+                            <tr>
+                                <th>Nama File</th>
+                                <th>Waktu Unggah</th>
+                                <th class="text-end">Aksi</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="dok : ${berkasList}">
+                                <td th:text="${dok.namaFile}">foto.jpg</td>
+                                <td class="small text-muted" th:text="${#temporals.format(dok.uploadedAt, 'dd-MM-yyyy HH:mm')}">01-01-2026</td>
+                                <td class="text-end">
+                                    <a class="btn btn-sm btn-outline-secondary" target="_blank"
+                                       th:href="@{/petugas/dokumentasi/{laporanId}/{dokId}/unduh(laporanId=${laporan.id}, dokId=${dok.id})}">
+                                        Lihat / Unduh
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card Feedback Admin -->
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h5 class="card-title mb-0">Feedback dari Admin</h5>
+                </div>
+                <div class="card-body">
+                    <div th:if="${#lists.isEmpty(feedbackList)}" class="text-muted text-center py-3">
+                        Belum ada feedback dari admin untuk laporan ini.
+                    </div>
+                    <div th:if="${!#lists.isEmpty(feedbackList)}">
+                        <div th:each="fb : ${feedbackList}" class="border rounded p-3 mb-2 bg-light">
+                            <div class="d-flex justify-content-between mb-1">
+                                <strong th:text="${fb.admin != null ? fb.admin.nama : 'Admin'}">Admin</strong>
+                                <small class="text-muted" th:text="${#temporals.format(fb.createdAt, 'dd-MM-yyyy HH:mm')}">01-01-2026 14:00</small>
+                            </div>
+                            <p class="mb-0" style="white-space: pre-wrap;" th:text="${fb.isi}">Catatan review admin...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/base :: scripts}"></th:block>
+</body>
+</html>

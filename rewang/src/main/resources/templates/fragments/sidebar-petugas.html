@@ -6,7 +6,7 @@
 
     <nav class="nav flex-column mt-2">
         <a class="nav-link" th:classappend="${active == 'dashboard'} ? 'active'" th:href="@{/petugas/dashboard}">Dashboard</a>
-        <a class="nav-link" th:classappend="${active == 'laporan'} ? 'active'" href="#">Laporan Bencana</a>
+        <a class="nav-link" th:classappend="${active == 'laporan'} ? 'active'" th:href="@{/petugas/laporan}">Laporan Bencana</a>
         <a class="nav-link" th:classappend="${active == 'kebutuhan'} ? 'active'" href="#">Kebutuhan Bantuan</a>
         <a class="nav-link" th:classappend="${active == 'dokumentasi'} ? 'active'" th:href="@{/petugas/dokumentasi}">Dokumentasi</a>
         <a class="nav-link" th:classappend="${active == 'feedback'} ? 'active'" th:href="@{/petugas/feedback}">Feedback</a>
