@@ -49,7 +49,7 @@ public class DokumentasiStorageService {
     }
 
     public List<Dokumentasi> daftar(Integer laporanId) {
-        return dokumentasiRepository.findByLaporanIdOrderByUploadedAtDesc(laporanId);
+        return dokumentasiRepository.findByLaporanIdOrderByCreatedAtDesc(laporanId);
     }
 
     public long jumlah(Integer laporanId) {
@@ -57,7 +57,12 @@ public class DokumentasiStorageService {
     }
 
     @Transactional
-    public Dokumentasi unggah(Laporan laporan, MultipartFile file) throws IOException {
+    public Dokumentasi unggah(Laporan laporan, User user, MultipartFile file) throws IOException {
+        return unggah(laporan, user, file, null);
+    }
+
+    @Transactional
+    public Dokumentasi unggah(Laporan laporan, User user, MultipartFile file, String keterangan) throws IOException {
         if (!laporan.isDraft()) {
             throw new IllegalStateException("Dokumentasi hanya bisa diunggah pada laporan draft.");
         }
@@ -76,15 +81,32 @@ public class DokumentasiStorageService {
             Files.copy(in, target, StandardCopyOption.REPLACE_EXISTING);
         }
 
+        String cleanName = original.replace("\\", "/");
+        if (cleanName.contains("/")) {
+            cleanName = cleanName.substring(cleanName.lastIndexOf('/') + 1);
+        }
+        String relativeUrl = relative.toString().replace('\\', '/');
+
         Dokumentasi row = new Dokumentasi();
         row.setLaporan(laporan);
-        row.setNamaFile(original.replace("\\", "/"));
-        if (row.getNamaFile().contains("/")) {
-            row.setNamaFile(row.getNamaFile().substring(row.getNamaFile().lastIndexOf('/') + 1));
-        }
-        row.setPathFile(relative.toString().replace('\\', '/'));
-        row.setUploadedAt(LocalDateTime.now());
+        row.setUploadedBy(user);
+        row.setFileUrl(relativeUrl);
+        row.setJenisFile(jenisFileFromExt(ext));
+        row.setKeterangan(keterangan);
+        row.setCreatedAt(LocalDateTime.now());
+        // kolom lama tetap diisi agar backward-compatible
+        row.setNamaFile(cleanName);
+        row.setPathFile(relativeUrl);
+        row.setUploadedAt(row.getCreatedAt());
         return dokumentasiRepository.save(row);
+    }
+
+    /** Map extension ke jenis_file sesuai ERD */
+    private static String jenisFileFromExt(String ext) {
+        return switch (ext) {
+            case "pdf" -> "dokumen";
+            default -> "foto";
+        };
     }
 
     @Transactional
@@ -96,7 +118,7 @@ public class DokumentasiStorageService {
         }
         Dokumentasi row = dokumentasiRepository.findByIdAndLaporanId(dokumentasiId, laporanId)
                 .orElseThrow(() -> new IllegalArgumentException("File tidak ditemukan."));
-        Path target = uploadRoot.resolve(row.getPathFile()).normalize();
+        Path target = uploadRoot.resolve(row.getFileUrl()).normalize();
         dokumentasiRepository.delete(row);
         if (target.startsWith(uploadRoot)) {
             Files.deleteIfExists(target);
@@ -110,9 +132,9 @@ public class DokumentasiStorageService {
         if (!laporan.isDraft()) {
             throw new IllegalStateException("Hanya bisa menghapus dokumentasi pada laporan draft.");
         }
-        List<Dokumentasi> list = dokumentasiRepository.findByLaporanIdOrderByUploadedAtDesc(laporanId);
+        List<Dokumentasi> list = dokumentasiRepository.findByLaporanIdOrderByCreatedAtDesc(laporanId);
         for (Dokumentasi dok : list) {
-            Path target = uploadRoot.resolve(dok.getPathFile()).normalize();
+            Path target = uploadRoot.resolve(dok.getFileUrl()).normalize();
             dokumentasiRepository.delete(dok);
             if (target.startsWith(uploadRoot)) {
                 Files.deleteIfExists(target);
@@ -125,7 +147,7 @@ public class DokumentasiStorageService {
                 .orElseThrow(() -> new IllegalArgumentException("Laporan tidak ditemukan."));
         Dokumentasi row = dokumentasiRepository.findByIdAndLaporanId(dokumentasiId, laporanId)
                 .orElseThrow(() -> new IllegalArgumentException("File tidak ditemukan."));
-        Path target = uploadRoot.resolve(row.getPathFile()).normalize();
+        Path target = uploadRoot.resolve(row.getFileUrl()).normalize();
         if (!target.startsWith(uploadRoot) || !Files.isRegularFile(target)) {
             throw new IllegalArgumentException("File tidak ditemukan di server.");
         }

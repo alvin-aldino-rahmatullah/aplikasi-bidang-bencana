@@ -146,8 +146,11 @@
                             </thead>
                             <tbody>
                             <tr th:each="dok : ${berkasList}">
-                                <td th:text="${dok.namaFile}">foto.jpg</td>
-                                <td class="small text-muted" th:text="${#temporals.format(dok.uploadedAt, 'dd-MM-yyyy HH:mm')}">01-01-2026</td>
+                                <td>
+                                    <span th:text="${dok.displayName}">foto.jpg</span>
+                                    <span class="badge text-bg-light border ms-1" th:text="${dok.jenisFile}">foto</span>
+                                </td>
+                                <td class="small text-muted" th:text="${#temporals.format(dok.createdAt != null ? dok.createdAt : dok.uploadedAt, 'dd-MM-yyyy HH:mm')}">01-01-2026</td>
                                 <td class="text-end">
                                     <a class="btn btn-sm btn-outline-secondary" target="_blank"
                                        th:href="@{/petugas/dokumentasi/{laporanId}/{dokId}/unduh(laporanId=${laporan.id}, dokId=${dok.id})}">

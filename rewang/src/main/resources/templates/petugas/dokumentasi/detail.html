@@ -23,9 +23,16 @@
                     <h5 class="card-title">Unggah file</h5>
                     <p class="small text-muted">jpg, png, atau pdf. Maksimal 5 MB.</p>
                     <form th:action="@{/petugas/dokumentasi/{id}(id=${laporan.id})}" method="post" enctype="multipart/form-data">
-                        <div class="input-group">
-                            <input type="file" name="file" class="form-control" accept=".jpg,.jpeg,.png,.pdf" required>
-                            <button type="submit" class="btn btn-primary">Unggah</button>
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-5">
+                                <input type="file" name="file" class="form-control" accept=".jpg,.jpeg,.png,.pdf" required>
+                            </div>
+                            <div class="col-md-5">
+                                <input type="text" name="keterangan" class="form-control" placeholder="Keterangan file (opsional)">
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-primary w-100">Unggah</button>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -43,6 +50,8 @@
                     <thead>
                     <tr>
                         <th>Nama file</th>
+                        <th>Jenis</th>
+                        <th>Keterangan</th>
                         <th>Waktu unggah</th>
                         <th></th>
                     </tr>
@@ -51,10 +60,14 @@
                     <tr th:each="d : ${berkas}">
                         <td>
                             <a th:href="@{/petugas/dokumentasi/{lid}/{did}/unduh(lid=${laporan.id}, did=${d.id})}"
-                               th:text="${d.namaFile}" target="_blank" rel="noopener">file</a>
+                               th:text="${d.displayName}" target="_blank" rel="noopener">file</a>
                         </td>
-                        <td th:text="${#temporals.format(d.uploadedAt, 'dd-MM-yyyy HH:mm')}">waktu</td>
                         <td>
+                            <span class="badge text-bg-info text-capitalize" th:text="${d.jenisFile}">foto</span>
+                        </td>
+                        <td th:text="${d.keterangan ?: '-'}">-</td>
+                        <td th:text="${#temporals.format(d.createdAt, 'dd-MM-yyyy HH:mm')}">waktu</td>
+                        <td class="text-end">
                             <form th:if="${laporan.draft}"
                                   th:action="@{/petugas/dokumentasi/{lid}/{did}/hapus(lid=${laporan.id}, did=${d.id})}"
                                   method="post" class="d-inline"

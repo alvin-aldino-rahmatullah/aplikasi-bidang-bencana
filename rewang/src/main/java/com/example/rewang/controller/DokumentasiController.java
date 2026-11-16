@@ -203,6 +203,7 @@ public class DokumentasiController {
             Authentication authentication,
             @PathVariable Integer laporanId,
             @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "keterangan", required = false) String keterangan,
             RedirectAttributes redirectAttributes) {
 
         User user = currentUserService.requireUser(authentication);
@@ -221,7 +222,7 @@ public class DokumentasiController {
         }
 
         try {
-            dokumentasiStorageService.unggah(laporan, file);
+            dokumentasiStorageService.unggah(laporan, user, file, keterangan);
 
             redirectAttributes.addFlashAttribute(
                     "sukses",
@@ -293,7 +294,7 @@ public class DokumentasiController {
         );
 
         String encoded = URLEncoder
-                .encode(dokumen.getNamaFile(), StandardCharsets.UTF_8)
+                .encode(dokumen.getDisplayName(), StandardCharsets.UTF_8)
                 .replace("+", "%20");
 
         return ResponseEntity.ok()
@@ -302,7 +303,7 @@ public class DokumentasiController {
                         "inline; filename*=UTF-8''" + encoded
                 )
                 .contentType(
-                        dokumentasiStorageService.mediaType(dokumen.getNamaFile())
+                        dokumentasiStorageService.mediaType(dokumen.getDisplayName())
                 )
                 .body(resource);
     }

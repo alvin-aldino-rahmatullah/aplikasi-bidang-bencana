@@ -6,6 +6,8 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface DokumentasiRepository extends JpaRepository<Dokumentasi, Integer> {
+    List<Dokumentasi> findByLaporanIdOrderByCreatedAtDesc(Integer laporanId);
+
     List<Dokumentasi> findByLaporanIdOrderByUploadedAtDesc(Integer laporanId);
 
     Optional<Dokumentasi> findByIdAndLaporanId(Integer id, Integer laporanId);
