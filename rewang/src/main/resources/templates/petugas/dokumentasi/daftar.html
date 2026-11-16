@@ -16,13 +16,13 @@
 
             <div class="card mb-4">
                 <div class="card-body">
-                    <h5 class="card-title">Buat laporan draft</h5>
-                    <p class="small text-muted mb-3">Dokumentasi menempel ke laporan. Form ini hanya untuk punya induk draft (bukan CRUD laporan lengkap).</p>
+                    <h5 class="card-title">Buat Laporan Baru untuk Dokumentasi</h5>
+                    <p class="small text-muted mb-3">Buat draft laporan bencana untuk melampirkan foto dan berkas dokumentasi di lapangan.</p>
                     <form th:action="@{/petugas/dokumentasi/laporan-draft}" method="post" class="row g-3">
                         <div class="col-md-4">
-                            <label class="form-label">Jenis bencana</label>
+                            <label class="form-label">Nama Bencana</label>
                             <select name="bencanaId" class="form-select" required>
-                                <option value="" disabled selected>Pilih</option>
+                                <option value="" disabled selected>Pilih nama bencana</option>
                                 <option th:each="b : ${bencanaList}" th:value="${b.id}" th:text="${b.nama}"></option>
                             </select>
                         </div>

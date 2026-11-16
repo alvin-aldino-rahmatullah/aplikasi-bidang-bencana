@@ -26,6 +26,23 @@ public class Dokumentasi {
     @JoinColumn(name = "laporan_id")
     private Laporan laporan;
 
+    @ManyToOne
+    @JoinColumn(name = "uploaded_by")
+    private User uploadedBy;
+
+    @Column(name = "file_url", nullable = false, length = 500)
+    private String fileUrl;
+
+    @Column(name = "jenis_file", nullable = false, length = 30)
+    private String jenisFile = "foto";
+
+    @Column(name = "keterangan")
+    private String keterangan;
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    // kolom lama tetap di-map agar data lama masih terbaca
     @Column(name = "nama_file")
     private String namaFile;
 
@@ -34,4 +51,12 @@ public class Dokumentasi {
 
     @Column(name = "uploaded_at")
     private LocalDateTime uploadedAt;
+
+    /** Nama tampilan: ambil dari namaFile jika ada, fallback ke basename fileUrl */
+    public String getDisplayName() {
+        if (namaFile != null && !namaFile.isBlank()) return namaFile;
+        if (fileUrl == null) return "file";
+        int slash = fileUrl.lastIndexOf('/');
+        return slash >= 0 ? fileUrl.substring(slash + 1) : fileUrl;
+    }
 }
